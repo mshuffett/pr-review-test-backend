@@ -20,21 +20,21 @@
 > +                bucket = _BucketEntry(count=0, window_start=now)
 > +                self._buckets[key] = bucket
 > ```
-> [`rate_limiter.py#L35`](https://github.com/mshuffett/pr-review-test-backend/blob/{SHA}/src/rate_limiter.py#L35)
+> [`rate_limiter.py#L35`](https://github.com/mshuffett/pr-review-test-backend/blob/3a9bc54bcb38fd5770168572a1212f3f0f0ac49c/src/rate_limiter.py#L35)
 >
 > **2. `time.time()` used instead of `time.monotonic()` (critical)** -- `time.time()` can jump backward during NTP sync or DST changes, breaking window expiry calculations. Monotonic clock is the correct choice for elapsed-time measurement.
 > ```diff
 > -        now = time.time()  # BUG: should use time.monotonic()
 > +        now = time.monotonic()
 > ```
-> [`rate_limiter.py#L33`](https://github.com/mshuffett/pr-review-test-backend/blob/{SHA}/src/rate_limiter.py#L33)
+> [`rate_limiter.py#L33`](https://github.com/mshuffett/pr-review-test-backend/blob/3a9bc54bcb38fd5770168572a1212f3f0f0ac49c/src/rate_limiter.py#L33)
 >
 > **3. Bare `except:` in `reset()` (high)** -- catches `KeyboardInterrupt`, `SystemExit`, and `GeneratorExit`, masking fatal errors. Fixed to catch only `KeyError`.
 > ```diff
 > -        except:  # BUG: bare except
 > +        except KeyError:
 > ```
-> [`rate_limiter.py#L64`](https://github.com/mshuffett/pr-review-test-backend/blob/{SHA}/src/rate_limiter.py#L64)
+> [`rate_limiter.py#L64`](https://github.com/mshuffett/pr-review-test-backend/blob/3a9bc54bcb38fd5770168572a1212f3f0f0ac49c/src/rate_limiter.py#L64)
 >
 > **4. First request always allowed regardless of `max_requests` (high)** -- when `max_requests=0`, the first request for a new key created a bucket with `count=1` and returned `True` without checking the limit. The window-reset path had the same issue. Fixed by initializing `count=0` and always checking `count < max_requests` before allowing.
 > ```diff
@@ -55,14 +55,14 @@
 > +                bucket.count += 1
 > +                return True
 > ```
-> [`rate_limiter.py#L38-L49`](https://github.com/mshuffett/pr-review-test-backend/blob/{SHA}/src/rate_limiter.py#L38-L49)
+> [`rate_limiter.py#L38-L49`](https://github.com/mshuffett/pr-review-test-backend/blob/3a9bc54bcb38fd5770168572a1212f3f0f0ac49c/src/rate_limiter.py#L38-L49)
 
 <details>
 <summary><strong>All issues (1 more)</strong></summary>
 
 | Sev | Issue | Fix | Link |
 |:---:|-------|-----|:----:|
-| :yellow_circle: | Unused `field` import from `dataclasses` | Removed import | [`rate_limiter.py#L7`](https://github.com/mshuffett/pr-review-test-backend/blob/{SHA}/src/rate_limiter.py#L7) |
+| :yellow_circle: | Unused `field` import from `dataclasses` | Removed import | [`rate_limiter.py#L7`](https://github.com/mshuffett/pr-review-test-backend/blob/3a9bc54bcb38fd5770168572a1212f3f0f0ac49c/src/rate_limiter.py#L7) |
 
 </details>
 
@@ -71,8 +71,8 @@
 
 | Suite | Count | Coverage | Link |
 |-------|:-----:|:--------:|:----:|
-| `test_rate_limiter.py` | 13 | 100% of `rate_limiter.py` | [`tests/test_rate_limiter.py`](https://github.com/mshuffett/pr-review-test-backend/blob/{SHA}/tests/test_rate_limiter.py) |
-| `test_config.py` | 4 | 100% of `config.py` | [`tests/test_config.py`](https://github.com/mshuffett/pr-review-test-backend/blob/{SHA}/tests/test_config.py) |
+| `test_rate_limiter.py` | 13 | 100% of `rate_limiter.py` | [`tests/test_rate_limiter.py`](https://github.com/mshuffett/pr-review-test-backend/blob/3a9bc54bcb38fd5770168572a1212f3f0f0ac49c/tests/test_rate_limiter.py) |
+| `test_config.py` | 4 | 100% of `config.py` | [`tests/test_config.py`](https://github.com/mshuffett/pr-review-test-backend/blob/3a9bc54bcb38fd5770168572a1212f3f0f0ac49c/tests/test_config.py) |
 
 **Test output:**
 ```

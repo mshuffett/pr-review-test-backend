@@ -10,3 +10,11 @@ class AppConfig:
     log_level: str = "INFO"
     storage_backend: str = "memory"
     max_keys: int = 10_000
+
+
+@dataclass
+class RateLimitConfig:
+    """Rate limiting configuration."""
+
+    max_requests: int = 100
+    window_seconds: float = 60.0

@@ -1,0 +1,8 @@
+[project]
+name = "pr-review-test-backend"
+version = "0.1.0"
+description = "Minimal Python backend for PR review skill eval"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
